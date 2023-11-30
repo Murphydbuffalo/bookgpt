@@ -41,10 +41,10 @@ class Embedding
 
     response = openai.embeddings(parameters: { model: EMBEDDING_MODEL, input: text })
 
-    { text:, embedding: response['data'].first['embedding'] }
+    { text:, embedding: response.dig('data', 0, 'embedding') }
   end
 
-  def most_relevant_embeddings(query, context_embeddings, limit = 5)
+  def most_relevant_embeddings(query, context_embeddings, limit = 10)
     query_embedding = generate_embedding(query)[:embedding]
 
     context_embeddings.map do |embedding|
