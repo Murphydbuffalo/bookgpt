@@ -2,4 +2,6 @@
 
 require './file_embedding'
 
-FileEmbedding.new('/Users/danmurphy/Desktop/The-Mom-Test-Print.pdf').save
+file_embedder = FileEmbedding.new('/Users/danmurphy/Desktop/The-Mom-Test-Print.pdf')
+file_embedder.write
+embeddings = file_embedder.read
