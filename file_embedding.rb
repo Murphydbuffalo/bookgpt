@@ -24,7 +24,8 @@ class FileEmbedding
 
   def read
     JSON.parse(
-      File.read(embedding_filename)
+      File.read(embedding_filename),
+      symbolize_names: true
     )
   end
 
