@@ -27,7 +27,7 @@ class Embedding
     )
 
     sections.map do |section|
-      { text: section, embedding: generate_embedding(section) }
+      generate_embedding(section)
     end
   end
 
@@ -36,7 +36,8 @@ class Embedding
     puts 'Calling OpenAI embeddings API'
 
     response = openai.embeddings(parameters: { model: EMBEDDING_MODEL, input: text })
-    response['data'].first['embedding']
+
+    { text:, embedding: response['data'].first['embedding'] }
   end
 
   private
