@@ -38,7 +38,9 @@ class Embedding
     token_count = OpenAI.rough_token_count(text)
 
     if token_count > EMBEDDING_MODEL_TOKEN_LIMIT
-      raise TokenLimitError, "Text is too large, consider splitting it into smaller sections using `generate_embeddings`. Text contains #{token_count} tokens, but max number of tokens is #{EMBEDDING_MODEL_TOKEN_LIMIT}"
+      # TODO: use `squish`
+      raise TokenLimitError, "Text is too long, consider splitting it into smaller sections using `generate_embeddings`.
+                              Text contains #{token_count} tokens, max is #{EMBEDDING_MODEL_TOKEN_LIMIT}."
     end
 
     # TODO: once we have Rails set up use Rails.logger.info
