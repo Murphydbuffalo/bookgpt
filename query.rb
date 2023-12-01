@@ -17,6 +17,8 @@ class Query
     @context_embeddings = context_embeddings
   end
 
+  # TODO: do we need to set a max token limit?
+  # TODO: make an informed decision about temperature, or make adjustable in the UI
   def ask
     most_relevant_passages = embedder.most_relevant_embeddings(question, context_embeddings)
     fine_tuning_prompt = 'You answer questions from curious entrepreneurs about the book The Mom Test by Rob Fitzpatrick.'
