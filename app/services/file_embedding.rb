@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'pdf-reader'
-require './embedding'
 
 class FileEmbedding
   attr_reader :filepath, :embedder

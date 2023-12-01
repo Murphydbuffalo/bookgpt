@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 require 'openai'
-require './file_embedding'
-require './embedding'
-require './errors'
 
 # https://platform.openai.com/docs/models/gpt-3-5
 GPT_MODEL = 'gpt-3.5-turbo-1106'
@@ -35,9 +32,8 @@ class Query
     )
 
     if available_context_tokens.negative?
-      # TODO: use `squish`
       raise TokenLimitError, "Question is too long, please provide a shorter question.
-                              Question contains #{available_context_tokens * -1} too many tokens."
+                              Question contains #{available_context_tokens * -1} too many tokens.".squish
     end
 
     most_relevant_passages = embedder.most_relevant_embeddings(question, context_embeddings)

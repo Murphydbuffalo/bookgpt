@@ -2,7 +2,6 @@
 
 require 'openai'
 require 'matrix'
-require './errors'
 
 # We split text containing more than this number of tokens into smaller subsections
 # From the OpenAI docs (https://cookbook.openai.com/examples/embedding_wikipedia_articles_for_search):
@@ -25,9 +24,7 @@ class Embedding
   end
 
   def generate_embeddings(text)
-    sections = split_text(
-      format_text(text)
-    )
+    sections = split_text(test.squish)
 
     sections.map do |section|
       generate_embedding(section)
@@ -38,13 +35,11 @@ class Embedding
     token_count = OpenAI.rough_token_count(text)
 
     if token_count > EMBEDDING_MODEL_TOKEN_LIMIT
-      # TODO: use `squish`
       raise TokenLimitError, "Text is too long, consider splitting it into smaller sections using `generate_embeddings`.
-                              Text contains #{token_count} tokens, max is #{EMBEDDING_MODEL_TOKEN_LIMIT}."
+                              Text contains #{token_count} tokens, max is #{EMBEDDING_MODEL_TOKEN_LIMIT}.".squish
     end
 
-    # TODO: once we have Rails set up use Rails.logger.info
-    puts 'Calling OpenAI embeddings API'
+    Rails.logger.info 'Calling OpenAI embeddings API'
 
     response = openai.embeddings(parameters: { model: EMBEDDING_MODEL, input: text })
 
@@ -74,11 +69,6 @@ class Embedding
   end
 
   private
-
-  def format_text(text)
-    # TODO: replace with `squish`
-    text.gsub(/\s{2}+/, ' ')
-  end
 
   # We could likely improve the performance of the model by splitting split text word breaks
   # to ensure we aren't splitting the middle of a sentence. In practice the model seems to be
