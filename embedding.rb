@@ -11,8 +11,10 @@ require 'matrix'
 # Shorter sections are better for reducing costs (which are proportional to the number of tokens)
 # Shorter sections allow more sections to be retrieved, which may help with recall
 # Overlapping sections may help prevent answers from being cut by section boundaries"
-MAX_TOKENS = 1600
+#
+# https://openai.com/blog/new-and-improved-embedding-model
 EMBEDDING_MODEL = 'text-embedding-ada-002'
+EMBEDDING_MODEL_CONTEXT_TOKEN_LIMIT = 8192
 
 class Embedding
   attr_reader :openai
@@ -73,12 +75,13 @@ class Embedding
     text.gsub(/\s{2}+/, ' ')
   end
 
+  # We could likely improve the performance of the model by splitting split text word breaks
+  # to ensure we aren't splitting the middle of a sentence. In practice the model seems to be
+  # performing fine without that step, so I've punted on it for now.
   def split_text(text)
     num_tokens = OpenAI.rough_token_count(text)
 
-    # TODO: If performance isn't good: split text on periods or word breaks,
-    # iteratively add those sentences to a string until it exceeds max tokens
-    if num_tokens > MAX_TOKENS
+    if num_tokens > EMBEDDING_MODEL_CONTEXT_TOKEN_LIMIT
       halfway_index = text.length / 2
       [
         split_text(text.slice(0..halfway_index)),

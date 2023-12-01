@@ -4,7 +4,13 @@ require 'openai'
 require './file_embedding'
 require './embedding'
 
-GPT_MODEL = 'gpt-3.5-turbo'
+# Latest GPT 3.5 has a context limit (prompt tokens + response token) of over 16,000
+# and its responses by default contain a maximum of 4096 tokens (this is adjustable via the `max_tokens` parameter).
+# https://platform.openai.com/docs/models/gpt-3-5
+# https://community.openai.com/t/clarification-for-max-tokens/19576/3
+GPT_MODEL = 'gpt-3.5-turbo-1106'
+GPT_CONTEXT_TOKEN_LIMIT = 16_385
+GPT_RESPONSE_TOKEN_LIMIT = 4096
 
 class Query
   attr_reader :openai, :question, :embedder, :context_embeddings
