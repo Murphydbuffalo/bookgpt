@@ -21,8 +21,7 @@ class Embedding
   attr_reader :openai
 
   def initialize
-    # TODO: put API key in env var
-    @openai = OpenAI::Client.new(access_token: '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')
+    @openai = OpenAI::Client.new(access_token: ENV.fetch('OPENAI_API_KEY'))
   end
 
   def generate_embeddings(text)
