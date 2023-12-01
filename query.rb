@@ -3,42 +3,54 @@
 require 'openai'
 require './file_embedding'
 require './embedding'
+require './errors'
 
-# Latest GPT 3.5 has a context limit (prompt tokens + response token) of over 16,000
-# and its responses by default contain a maximum of 4096 tokens (this is adjustable via the `max_tokens` parameter).
 # https://platform.openai.com/docs/models/gpt-3-5
-# https://community.openai.com/t/clarification-for-max-tokens/19576/3
 GPT_MODEL = 'gpt-3.5-turbo-1106'
 GPT_CONTEXT_TOKEN_LIMIT = 16_385
 GPT_RESPONSE_TOKEN_LIMIT = 4096
 
 class Query
-  attr_reader :openai, :question, :embedder, :context_embeddings
+  attr_reader :openai, :embedder, :context_embeddings
 
-  def initialize(question, context_embeddings)
+  def initialize(context_embeddings)
     # TODO: put API key in env var
     @openai = OpenAI::Client.new(access_token: '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')
-    @question = question
     @embedder = Embedding.new
     @context_embeddings = context_embeddings
   end
 
-  # TODO: do we need to set a max token limit?
-  # TODO: make an informed decision about temperature, or make adjustable in the UI
-  def ask
-    most_relevant_passages = embedder.most_relevant_embeddings(question, context_embeddings)
+  def ask(question)
     fine_tuning_prompt = 'You answer questions from curious entrepreneurs about the book The Mom Test by Rob Fitzpatrick.'
     user_prompt = 'Use the provided passages from the book The Mom Test to answer the following question\n'
     user_prompt += "Question: #{question}\n"
 
-    most_relevant_passages.each do |(_relevance, passage)|
-      user_prompt += "Passage: #{passage}\n"
+    # The combined token count of the model's response and the provided prompts cannot exceed GPT_CONTEXT_TOKEN_LIMIT.
+    # We can adjust the maximum response length via the `max_tokens` parameter, but for now have left that at the default of GPT_RESPONSE_TOKEN_LIMIT.
+    # https://community.openai.com/t/clarification-for-max-tokens/19576/3
+    available_context_tokens = GPT_CONTEXT_TOKEN_LIMIT - (OpenAI.rough_token_count(fine_tuning_prompt) + OpenAI.rough_token_count(user_prompt) + GPT_RESPONSE_TOKEN_LIMIT)
+
+    if available_context_tokens.negative?
+      raise TokenLimitError, "Question is too long, please provide a shorter question. Question contains #{available_context_tokens * -1} too many tokens."
+    end
+
+    most_relevant_passages = embedder.most_relevant_embeddings(question, context_embeddings)
+
+    most_relevant_passages.each do |(_relevance, text)|
+      passage = "Passage: #{text}\n"
+      passage_token_count = OpenAI.rough_token_count(passage)
+
+      next if (available_context_tokens - passage_token_count).negative?
+
+      available_context_tokens -= passage_token_count
+      user_prompt += passage
     end
 
     response = openai.chat(parameters:
                             {
                               model: GPT_MODEL,
                               temperature: 0.2,
+                              max_tokens: GPT_RESPONSE_TOKEN_LIMIT,
                               messages: [
                                 { role: 'system', content: fine_tuning_prompt },
                                 { role: 'user', content: user_prompt }

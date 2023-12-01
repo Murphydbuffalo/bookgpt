@@ -3,7 +3,6 @@
 require 'pdf-reader'
 require './embedding'
 
-# TODO: use a vector database or even a normal database to read write the embeddings?
 class FileEmbedding
   attr_reader :filepath, :embedder
 

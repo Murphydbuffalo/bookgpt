@@ -2,6 +2,7 @@
 
 require 'openai'
 require 'matrix'
+require './errors'
 
 # We split text containing more than this number of tokens into smaller subsections
 # From the OpenAI docs (https://cookbook.openai.com/examples/embedding_wikipedia_articles_for_search):
@@ -14,7 +15,7 @@ require 'matrix'
 #
 # https://openai.com/blog/new-and-improved-embedding-model
 EMBEDDING_MODEL = 'text-embedding-ada-002'
-EMBEDDING_MODEL_CONTEXT_TOKEN_LIMIT = 8192
+EMBEDDING_MODEL_TOKEN_LIMIT = 8192
 
 class Embedding
   attr_reader :openai
@@ -35,8 +36,11 @@ class Embedding
   end
 
   def generate_embedding(text)
-    # TODO: Raise an error if the text is above the token limit, and suggest using
-    # generate_embeddings to split the text into sections
+    token_count = OpenAI.rough_token_count(text)
+
+    if token_count > EMBEDDING_MODEL_TOKEN_LIMIT
+      raise TokenLimitError, "Text is too large, consider splitting it into smaller sections using `generate_embeddings`. Text contains #{token_count} tokens, but max number of tokens is #{EMBEDDING_MODEL_TOKEN_LIMIT}"
+    end
 
     # TODO: once we have Rails set up use Rails.logger.info
     puts 'Calling OpenAI embeddings API'
@@ -81,7 +85,7 @@ class Embedding
   def split_text(text)
     num_tokens = OpenAI.rough_token_count(text)
 
-    if num_tokens > EMBEDDING_MODEL_CONTEXT_TOKEN_LIMIT
+    if num_tokens > EMBEDDING_MODEL_TOKEN_LIMIT
       halfway_index = text.length / 2
       [
         split_text(text.slice(0..halfway_index)),
