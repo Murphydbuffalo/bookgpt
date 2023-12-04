@@ -2,5 +2,12 @@
   "devDependencies": {
     "vite": "^5.0.5",
     "vite-plugin-rails": "0.5.0"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "engines": {
+    "node": "v20.10.0"
   }
 }
