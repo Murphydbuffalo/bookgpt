@@ -24,7 +24,7 @@ class Embedding
   end
 
   def generate_embeddings(text)
-    sections = split_text(test.squish)
+    sections = split_text(text.squish)
 
     sections.map do |section|
       generate_embedding(section)
