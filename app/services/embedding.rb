@@ -3,20 +3,20 @@
 require 'openai'
 require 'matrix'
 
-# We split text containing more than this number of tokens into smaller subsections
-# From the OpenAI docs (https://cookbook.openai.com/examples/embedding_wikipedia_articles_for_search):
-# "There's no perfect recipe for splitting text into sections. Some tradeoffs include:
-# Longer sections may be better for questions that require more context
-# Longer sections may be worse for retrieval, as they may have more topics muddled together
-# Shorter sections are better for reducing costs (which are proportional to the number of tokens)
-# Shorter sections allow more sections to be retrieved, which may help with recall
-# Overlapping sections may help prevent answers from being cut by section boundaries"
-#
-# https://openai.com/blog/new-and-improved-embedding-model
-EMBEDDING_MODEL = 'text-embedding-ada-002'
-EMBEDDING_MODEL_TOKEN_LIMIT = 8192
-
 class Embedding
+  # We split text containing more than this number of tokens into smaller subsections
+  # From the OpenAI docs (https://cookbook.openai.com/examples/embedding_wikipedia_articles_for_search):
+  # "There's no perfect recipe for splitting text into sections. Some tradeoffs include:
+  # Longer sections may be better for questions that require more context
+  # Longer sections may be worse for retrieval, as they may have more topics muddled together
+  # Shorter sections are better for reducing costs (which are proportional to the number of tokens)
+  # Shorter sections allow more sections to be retrieved, which may help with recall
+  # Overlapping sections may help prevent answers from being cut by section boundaries"
+  #
+  # https://openai.com/blog/new-and-improved-embedding-model
+  EMBEDDING_MODEL = 'text-embedding-ada-002'
+  EMBEDDING_MODEL_TOKEN_LIMIT = 8192
+
   attr_reader :openai
 
   def initialize
