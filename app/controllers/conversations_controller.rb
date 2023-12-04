@@ -14,7 +14,10 @@ class ConversationsController < ApplicationController
   USER_ID = 1
 
   def index
-    conversation_titles_by_id = Conversation.where(user_id: USER_ID).pluck(:id, :title).index_by(&:first)
+    conversation_titles_by_id = Conversation.where(user_id: USER_ID)
+                                            .pluck(:id, :title)
+                                            .index_by(&:first)
+                                            .transform_values(&:last)
 
     render json: conversation_titles_by_id
   end
