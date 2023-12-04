@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'openai'
-
 class Query
   # NOTE: As of this writing 1106 is the latest GPT 3.5 Turbo model,
   # with significantly higher token limits than earlier versions.

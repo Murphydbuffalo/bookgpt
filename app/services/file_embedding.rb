@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pdf-reader'
-
 class FileEmbedding
   attr_reader :filepath, :embedder
 

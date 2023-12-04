@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'openai'
-require 'matrix'
-
 class Embedding
   # We split text containing more than this number of tokens into smaller subsections
   # From the OpenAI docs (https://cookbook.openai.com/examples/embedding_wikipedia_articles_for_search):
