@@ -2,18 +2,15 @@ import { useState, useEffect } from 'react';
 import ChatInput from './ChatInput';
 import ChatMessage from './ChatMessage';
 import '../stylesheets/App.css';
-import '../stylesheets/ConversationList.css';
+import ConversationList from './ConversationList';
+import { Conversation } from './ConversationList';
+
 
 type ConversationRole = 'user' | 'system';
 
 export interface Message {
   content: string;
   role: ConversationRole;
-}
-
-interface Conversation {
-  title: string;
-  id: number;
 }
 
 async function postJson(url: string, body: Record<any, any>) {
@@ -102,14 +99,11 @@ export default function ChatApp() {
         <p>{error}</p>
       </div>}
 
-      <ul className="conversation-list">
-        <h3>BookGPT</h3>
-        {conversations.map((conversation) => (
-          <li key={conversation.id} className={conversation.id === conversationId ? 'selected' : ''} onClick={() => { selectConversation(conversation.id) }}>
-            {conversation.title}
-          </li>
-        ))}
-      </ul>
+      <ConversationList
+       conversations={conversations}
+       selectedConversationId={conversationId}
+       handleClick={selectConversation}
+      />
 
       <div className="chat-container">
         {messages.map((message, index) => (
