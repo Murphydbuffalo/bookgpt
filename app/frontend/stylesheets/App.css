@@ -39,7 +39,7 @@ body {
   align-self: flex-end;
 }
 
-.bot-message {
+.system-message {
   background-color: #2196f3;
   color: white;
 }
@@ -70,4 +70,8 @@ body {
 
 .error-message {
   background-color: red;
+}
+
+.selected {
+  border: 2px solid black;
 }

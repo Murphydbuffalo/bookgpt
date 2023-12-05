@@ -1,11 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ChatInput from './ChatInput';
 import ChatMessage from './ChatMessage';
 import '../stylesheets/App.css';
 
-interface Message {
-  text: string;
-  isUser: boolean;
+type ConversationRole = 'user' | 'system';
+
+export interface Message {
+  content: string;
+  role: ConversationRole;
+}
+
+interface Conversation {
+  title: string;
+  id: number;
+  selected: boolean;
 }
 
 async function postJson(url: string, body: Record<any, any>) {
@@ -21,22 +29,69 @@ async function postJson(url: string, body: Record<any, any>) {
 export default function ChatApp() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState('');
+  const [conversationId, setConversationId] = useState<number | null>(null);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+
+  async function selectConversation(conversationId: number) {
+    try {
+      const response = await fetch(`/conversations/${conversationId}`);
+      const responseBody = await response.json();
+
+      if (response.ok) {
+        setMessages(responseBody.messages);
+        setConversationId(conversationId);
+      } else {
+        setError(responseBody.error);
+      }
+    } catch(err) {
+      const e = (err as { message: string });
+      const message = e.message ? e.message : 'Unable to fetch conversations, please try again in a moment.';
+      setError(message);
+    }
+  }
+
+  useEffect(() => {
+    async function fetchConversations() {
+      try {
+        const response = await fetch('/conversations');
+        const responseBody = await response.json();
+
+        if (response.ok) {
+          const conversations = responseBody.map((convo: [id: number, title: string]) => {
+            const [id, title] = convo;
+            return { id, title, selected: id === conversationId };
+          });
+
+          setConversations(conversations);
+        } else {
+          setError(responseBody.error);
+        }
+      } catch(err) {
+        const e = (err as { message: string });
+        const message = e.message ? e.message : 'Unable to fetch conversations, please try again in a moment.';
+        setError(message);
+      }
+    }
+
+    fetchConversations();
+  }, []);
 
   const fetchAnswer = async (userMessage: string): Promise<void> => {
     setError('');
 
     try {
-      const response = await postJson('/conversations', { question: userMessage });
+      const response = await postJson('/conversations', { question: userMessage, conversation_id: conversationId });
       const responseBody = await response.json();
 
       if (response.ok) {
         const botAnswer = responseBody.answer;
-        setMessages([...messages, { text: userMessage, isUser: true }, { text: botAnswer, isUser: false }]);
+        setMessages([...messages, { content: userMessage, role: 'user' }, { content: botAnswer, role: 'system' }]);
       } else {
         setError(responseBody.error);
       }
     } catch(err) {
-      const message = (err as { message: string }).message ?? 'Something went wrong, please try again in a moment.';
+      const e = (err as { message: string });
+      const message = e.message ? e.message : 'Something went wrong sending your message, please try again in a moment.';
       setError(message);
     }
   };
@@ -46,6 +101,15 @@ export default function ChatApp() {
       {error && <div className="error-message">
         <p>{error}</p>
       </div>}
+
+      <ul className="conversation-list">
+        {conversations.map((conversation) => (
+          <li key={conversation.id} className={conversation.selected ? 'selected' : ''} onClick={() => { selectConversation(conversation.id) }}>
+            {conversation.title}
+          </li>
+        ))}
+      </ul>
+
       <div className="chat-container">
         {messages.map((message, index) => (
           <ChatMessage key={index} message={message} />
