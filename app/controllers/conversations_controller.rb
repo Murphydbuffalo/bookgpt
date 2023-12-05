@@ -13,7 +13,7 @@ class ConversationsController < ApplicationController
   USER_ID = 1
 
   def index
-    render json: Conversation.where(user_id: USER_ID).pluck(:id, :title)
+    render json: Conversation.where(user_id: USER_ID).order(created_at: :desc).limit(50).pluck(:id, :title)
   end
 
   def show
