@@ -13,7 +13,6 @@ export interface Message {
 interface Conversation {
   title: string;
   id: number;
-  selected: boolean;
 }
 
 async function postJson(url: string, body: Record<any, any>) {
@@ -59,7 +58,7 @@ export default function ChatApp() {
         if (response.ok) {
           const conversations = responseBody.map((convo: [id: number, title: string]) => {
             const [id, title] = convo;
-            return { id, title, selected: id === conversationId };
+            return { id, title };
           });
 
           setConversations(conversations);
@@ -104,7 +103,7 @@ export default function ChatApp() {
 
       <ul className="conversation-list">
         {conversations.map((conversation) => (
-          <li key={conversation.id} className={conversation.selected ? 'selected' : ''} onClick={() => { selectConversation(conversation.id) }}>
+          <li key={conversation.id} className={conversation.id === conversationId ? 'selected' : ''} onClick={() => { selectConversation(conversation.id) }}>
             {conversation.title}
           </li>
         ))}
