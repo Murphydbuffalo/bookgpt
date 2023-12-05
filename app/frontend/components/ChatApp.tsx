@@ -102,6 +102,7 @@ export default function ChatApp() {
       </div>}
 
       <ul className="conversation-list">
+        <h3>BookGPT</h3>
         {conversations.map((conversation) => (
           <li key={conversation.id} className={conversation.id === conversationId ? 'selected' : ''} onClick={() => { selectConversation(conversation.id) }}>
             {conversation.title}
