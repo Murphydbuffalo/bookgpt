@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import ChatInput from './ChatInput';
 import ChatMessage from './ChatMessage';
 import '../stylesheets/Chat.css';
+import '../stylesheets/Loading.css';
 import ConversationList from './ConversationList';
 import { Conversation } from './ConversationList';
 
@@ -28,6 +29,7 @@ export default function Chat() {
   const [error, setError] = useState('');
   const [conversationId, setConversationId] = useState<number | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   async function selectConversation(conversationId: number | null) {
     setError('');
@@ -86,6 +88,7 @@ export default function Chat() {
 
   const fetchAnswer = async (userMessage: string): Promise<void> => {
     setError('');
+    setIsLoading(true);
 
     try {
       const response = await postJson('/conversations', { question: userMessage, conversation_id: conversationId });
@@ -107,6 +110,8 @@ export default function Chat() {
       const e = (err as { message: string });
       const message = e.message ? e.message : 'Something went wrong sending your message, please try again in a moment.';
       setError(message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -127,7 +132,7 @@ export default function Chat() {
           <ChatMessage key={index} message={message} />
         ))}
       </div>
-      <ChatInput onMessageSubmit={fetchAnswer} />
+      <ChatInput isLoading={isLoading} onMessageSubmit={fetchAnswer} />
     </div>
   );
 };
