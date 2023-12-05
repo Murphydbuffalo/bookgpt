@@ -17,14 +17,17 @@ export default function ConversationList(props: ConversationListProps) {
   return (
     <ul className="conversation-list">
       <h3>BookGPT</h3>
-      {[newConversation].concat(conversations).map((conversation) => (
-        <li
-         key={conversation.id}
-         className={conversation.id === selectedConversationId ? 'selected' : ''}
-         onClick={() => { handleClick(conversation.id) }}
-        >
-          {conversation.title}
-        </li>
+      {[newConversation].concat(conversations).map((conversation, i) => (
+        <>
+          <li
+          key={conversation.id}
+          className={conversation.id === selectedConversationId ? 'selected' : ''}
+          onClick={() => { handleClick(conversation.id) }}
+          >
+            {conversation.title}
+          </li>
+          {i === 0 && <hr></hr>}
+        </>
       ))}
     </ul>
   );
