@@ -1,6 +1,11 @@
+:root {
+  --off-white: #f8f8f8;
+  --brand-red: rgb(187,57,103);
+}
+
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f8f8f8;
+  background-color: var(--off-white);
   margin: 0;
   padding: 0;
 }
@@ -10,66 +15,64 @@ body {
   flex-direction: column;
   max-width: 400px;
   margin: auto;
-  background-color: #fff;
+  background-color: white;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  overflow: hidden;
-}
 
-.chat-container {
-  padding: 10px;
-  max-height: 400px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #ddd #f8f8f8;
-}
+  .chat-container {
+    padding: 10px;
+    max-height: 60vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ddd var(--off-white);
 
-.chat-message {
-  background-color: #f8f8f8;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 5px;
-  font-size: 14px;
-  line-height: 1.4;
-}
+    .chat-message {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
 
-.user-message {
-  background-color: #4caf50;
-  color: white;
-  align-self: flex-end;
-}
+    .user-message {
+      background-color: var(--brand-red);
+      color: white;
+      align-self: flex-end;
+    }
 
-.system-message {
-  background-color: #2196f3;
-  color: white;
-}
+    .system-message {
+      background-color: rgb(0, 0, 0, 0.9);
+      color: white;
+    }
+  }
 
-.chat-input-form {
-  display: flex;
-  margin-top: 10px;
-  border-top: 1px solid #ddd;
-}
+  .chat-input-form {
+    display: flex;
+    margin-top: 10px;
+    border-top: 1px solid #ddd;
 
-.chat-input {
-  flex: 1;
-  padding: 8px;
-  font-size: 14px;
-  border: none;
-  outline: none;
-}
+    .chat-input {
+      flex: 1;
+      padding: 8px;
+      font-size: 14px;
+      border: none;
+      outline: none;
+    }
 
-.send-button {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 8px;
-  cursor: pointer;
-  border-radius: 0 5px 5px 0;
-  font-size: 14px;
+    .send-button {
+      background-color: var(--brand-red);
+      color: white;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 0 5px 5px 0;
+      font-size: 14px;
+    }
+  }
 }
 
 .error-message {
-  background-color: red;
+  background-color: var(--brand-red);
 }
 
 a {
