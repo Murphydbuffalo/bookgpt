@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
 interface ChatInputProps {
-  onMessageSubmit: (text: string, isUser?: boolean) => void;
+  onMessageSubmit: (text: string, isUser: boolean) => void;
 }
 
 export default function ChatInput({ onMessageSubmit }: ChatInputProps ) {
-  const [inputText, setInputText] = useState<string>('');
+  const [inputText, setInputText] = useState('');
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
@@ -21,7 +21,7 @@ export default function ChatInput({ onMessageSubmit }: ChatInputProps ) {
         type="text"
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}
-        placeholder="Type your message..."
+        placeholder="Ask away..."
         className="chat-input"
       />
       <button type="submit" className="send-button">
