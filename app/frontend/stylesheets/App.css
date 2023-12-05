@@ -67,3 +67,7 @@ body {
   border-radius: 0 5px 5px 0;
   font-size: 14px;
 }
+
+.error-message {
+  background-color: red;
+}
