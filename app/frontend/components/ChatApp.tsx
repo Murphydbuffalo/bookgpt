@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import ChatInput from './ChatInput';
 import ChatMessage from './ChatMessage';
 import '../stylesheets/App.css';
+import '../stylesheets/ConversationList.css';
 
 type ConversationRole = 'user' | 'system';
 

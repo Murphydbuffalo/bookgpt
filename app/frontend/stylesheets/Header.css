@@ -1,0 +1,12 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1.5em;
+  text-align: center;
+
+  .header-item {
+    border-radius: 6px;
+    width: 200px;
+  }
+}
