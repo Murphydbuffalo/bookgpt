@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
-import ChatApp from '../components/ChatApp';
+import Chat from '../components/Chat';
 import Header from '../components/Header';
+import '../stylesheets/App.css';
 
 const container = document.getElementById('app');
 
@@ -13,5 +14,5 @@ const root = createRoot(container);
 root.render(
 <>
   <Header />
-  <ChatApp />
+  <Chat />
 </>);

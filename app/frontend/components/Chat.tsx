@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import ChatInput from './ChatInput';
 import ChatMessage from './ChatMessage';
-import '../stylesheets/App.css';
+import '../stylesheets/Chat.css';
 import ConversationList from './ConversationList';
 import { Conversation } from './ConversationList';
 
@@ -23,7 +23,7 @@ async function postJson(url: string, body: Record<any, any>) {
   return await fetch(url, options);
 }
 
-export default function ChatApp() {
+export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState('');
   const [conversationId, setConversationId] = useState<number | null>(null);
