@@ -49,7 +49,7 @@ class ConversationsController < ApplicationController
       @conversation.messages.create!(role: 'system', content: answer)
     end
 
-    render json: { answer:, conversation_id: @conversation.id }
+    render json: { answer:, conversation_id: @conversation.id, conversation_title: @conversation.title }
   rescue StandardError => e
     Rails.logger.error(e.backtrace.join("\n"))
     render json: { error: e.message }, status: :unprocessable_entity

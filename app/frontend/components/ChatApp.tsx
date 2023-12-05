@@ -29,7 +29,16 @@ export default function ChatApp() {
   const [conversationId, setConversationId] = useState<number | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
 
-  async function selectConversation(conversationId: number) {
+  async function selectConversation(conversationId: number | null) {
+    setError('');
+
+    if (conversationId == null) {
+      setMessages([]);
+      setConversationId(null);
+
+      return;
+    }
+  
     try {
       const response = await fetch(`/conversations/${conversationId}`);
       const responseBody = await response.json();
@@ -49,6 +58,8 @@ export default function ChatApp() {
 
   useEffect(() => {
     async function fetchConversations() {
+      setError('');
+
       try {
         const response = await fetch('/conversations');
         const responseBody = await response.json();
@@ -83,6 +94,12 @@ export default function ChatApp() {
       if (response.ok) {
         const botAnswer = responseBody.answer;
         setMessages([...messages, { content: userMessage, role: 'user' }, { content: botAnswer, role: 'system' }]);
+
+        if (conversationId == null) { // It's a new conversation
+          const newConversation = { id: responseBody.conversation_id, title: responseBody.conversation_title };
+          setConversationId(newConversation.id);
+          setConversations([newConversation, ...conversations])
+        }
       } else {
         setError(responseBody.error);
       }
