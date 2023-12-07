@@ -58,8 +58,7 @@ class ConversationsController < ApplicationController
   private
 
   def set_embeddings
-    # TODO: put the filepath into a constant or otherwise remove the need to specify it everywhere
-    file_embedder = FileEmbedding.new('/Users/danmurphy/Desktop/The-Mom-Test-Print.pdf')
+    file_embedder = FileEmbedding.new(ENV.fetch('BOOK_FILE_PATH'))
     @embeddings = file_embedder.read
   end
 

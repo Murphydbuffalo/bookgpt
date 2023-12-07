@@ -6,7 +6,6 @@ import '../stylesheets/Loading.css';
 import ConversationList from './ConversationList';
 import { Conversation } from './ConversationList';
 
-
 type ConversationRole = 'user' | 'system';
 
 export interface Message {
