@@ -28,7 +28,8 @@ export default function Chat() {
   const [error, setError] = useState('');
   const [conversationId, setConversationId] = useState<number | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [conversationListIsLoading, setConversationListIsLoading] = useState(false);
+  const [answerIsLoading, setAnswerIsLoading] = useState(false);
   const [cachedConversationData, setCachedConversationData] = useState<Record<number, Message[]>>({});
 
   async function selectConversation(conversationId: number | null) {
@@ -62,7 +63,7 @@ export default function Chat() {
       }
     } catch(err) {
       const e = (err as { message: string });
-      const message = e.message ? e.message : 'Unable to fetch conversations, please try again in a moment.';
+      const message = e.message ? e.message : 'Unable to fetch conversation data, please try again in a moment.';
       setError(message);
     }
   }
@@ -70,7 +71,7 @@ export default function Chat() {
   useEffect(() => {
     async function fetchConversations() {
       setError('');
-      setIsLoading(true)
+      setConversationListIsLoading(true)
 
       try {
         const response = await fetch('/conversations');
@@ -91,7 +92,7 @@ export default function Chat() {
         const message = e.message ? e.message : 'Unable to fetch conversations, please try again in a moment.';
         setError(message);
       } finally {
-        setIsLoading(false)
+        setConversationListIsLoading(false)
       }
     }
 
@@ -100,7 +101,7 @@ export default function Chat() {
 
   const fetchAnswer = async (userMessage: string): Promise<void> => {
     setError('');
-    setIsLoading(true);
+    setAnswerIsLoading(true);
 
     try {
       const response = await postJson('/conversations', { question: userMessage, conversation_id: conversationId });
@@ -123,7 +124,7 @@ export default function Chat() {
       const message = e.message ? e.message : 'Something went wrong sending your message, please try again in a moment.';
       setError(message);
     } finally {
-      setIsLoading(false);
+      setAnswerIsLoading(false);
     }
   };
 
@@ -137,7 +138,7 @@ export default function Chat() {
        conversations={conversations}
        selectedConversationId={conversationId}
        handleClick={selectConversation}
-       isLoading={isLoading}
+       isLoading={conversationListIsLoading}
       />
 
       <div className="chat-container">
@@ -145,7 +146,7 @@ export default function Chat() {
           <ChatMessage key={index} message={message} />
         ))}
       </div>
-      <ChatInput isLoading={isLoading} onMessageSubmit={fetchAnswer} />
+      <ChatInput isLoading={answerIsLoading} onMessageSubmit={fetchAnswer} />
     </div>
   );
 };
