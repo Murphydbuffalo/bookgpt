@@ -61,7 +61,9 @@ class Query
   def fine_tuning_messages
     [{
       role: 'system',
-      content: 'Use the provided passages to answer questions about the book The Mom Test by Rob Fitzpatrick.'
+      content: "Use the provided passages to answer questions about the book The Mom Test by Rob Fitzpatrick.
+                Don't mention the fact that you're using provided passages.
+                Keep your answers to a max of a few short sentences.".squish
     }]
   end
 
