@@ -1,9 +1,6 @@
 import '../stylesheets/ConversationList.css';
-
-export interface Conversation {
-  title: string;
-  id: number | null;
-}
+import ConversationListItem from './ConversationListItem';
+import { Conversation } from './ConversationListItem';
 
 interface ConversationListProps {
   selectedConversationId: number | null,
@@ -15,18 +12,18 @@ interface ConversationListProps {
 export default function ConversationList(props: ConversationListProps) {
   const { conversations, selectedConversationId, isLoading, handleClick } = props;
   const newConversation = { id: null, title: '+ New Conversation' } as Conversation;
+
   return (
     <ul className="conversation-list">
       <h3>BookGPT</h3>
       {[newConversation].concat(conversations).map((conversation, i) => (
         <>
-          <li
-          key={conversation.id}
-          className={conversation.id === selectedConversationId ? 'selected' : ''}
-          onClick={() => { handleClick(conversation.id) }}
-          >
-            {conversation.title}
-          </li>
+          <ConversationListItem
+           key={conversation.id}
+           conversation={conversation}
+           isSelected={conversation.id === selectedConversationId}
+           handleClick={handleClick}
+          />
           {i === 0 && <hr></hr>}
         </>
       ))}

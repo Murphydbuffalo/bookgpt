@@ -4,7 +4,7 @@ import ChatMessage from './ChatMessage';
 import '../stylesheets/Chat.css';
 import '../stylesheets/Loading.css';
 import ConversationList from './ConversationList';
-import { Conversation } from './ConversationList';
+import { Conversation } from './ConversationListItem';
 
 type ConversationRole = 'user' | 'system';
 
