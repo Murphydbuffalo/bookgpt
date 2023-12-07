@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [
     react(),
     Rails({
+      // Sets defaults for these env vars.
       envVars: { RAILS_ENV: 'development' },
     }),
   ],
