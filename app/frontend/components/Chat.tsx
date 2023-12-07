@@ -118,7 +118,7 @@ export default function Chat() {
   return (
     <div className="chat-app">
       {error && <div className="error-message">
-        <p>{error}</p>
+        <p>{`We ran into a problem: ${error}`}</p>
       </div>}
 
       <ConversationList

@@ -11,7 +11,20 @@ body {
 }
 
 .error-message {
-  background-color: var(--brand-red);
+  background-color: darkred;
+  border-radius: 10px;
+  padding: 0 1em;
+  color: white;
+  position: absolute;
+  top: 5em;
+  opacity: 1.0;
+  animation: fadeOut 5s forwards;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0.0;
+  }
 }
 
 a {
