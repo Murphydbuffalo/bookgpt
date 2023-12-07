@@ -60,6 +60,7 @@ export default function Chat() {
   useEffect(() => {
     async function fetchConversations() {
       setError('');
+      setIsLoading(true)
 
       try {
         const response = await fetch('/conversations');
@@ -79,6 +80,8 @@ export default function Chat() {
         const e = (err as { message: string });
         const message = e.message ? e.message : 'Unable to fetch conversations, please try again in a moment.';
         setError(message);
+      } finally {
+        setIsLoading(false)
       }
     }
 
