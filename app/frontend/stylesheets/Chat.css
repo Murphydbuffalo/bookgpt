@@ -12,11 +12,6 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
 
-    ::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-    }
-
     .chat-message {
       padding: 10px;
       margin: 5px 0;
@@ -41,7 +36,6 @@
     width: 0;
     height: 0;
   }
-
 
   .chat-input-form {
     position: fixed;
