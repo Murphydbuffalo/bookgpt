@@ -5,6 +5,10 @@ export default function ChatMessage(props: { message: Message }) {
 
   return (
     <div className={`chat-message ${role}-message`}>
+      <strong>
+        {role === 'user' ? 'You' : 'BookGPT'}:
+      </strong>
+      &nbsp;
       {content}
     </div>
   );
