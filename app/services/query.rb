@@ -63,7 +63,8 @@ class Query
       role: 'system',
       content: "Use the provided passages to answer questions about the book The Mom Test by Rob Fitzpatrick.
                 Don't mention the fact that you're using provided passages.
-                Keep your answers to a max of a few short sentences.".squish
+                Keep your answers to a max of a few short sentences.
+                If you're not confident of the answer, or the question seems non-sensical say something like \"I'm not sure what you're asking.\"".squish
     }]
   end
 
