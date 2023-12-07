@@ -1,19 +1,21 @@
 .chat-app {
   display: flex;
   flex-direction: column;
-  max-width: 600px;
+  max-width: 50%;
   margin: auto;
-  background-color: white;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
 
   .chat-container {
     padding: 10px;
     max-height: 60vh;
     min-height: 30vh;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #ddd var(--off-white);
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    ::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
 
     .chat-message {
       padding: 10px;
@@ -35,10 +37,18 @@
     }
   }
 
+  .chat-container::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+
   .chat-input-form {
+    position: fixed;
+    bottom: 3em;
     display: flex;
     margin-top: 10px;
-    border-top: 1px solid #ddd;
+    width: 60%;
 
     .chat-input {
       flex: 1;
@@ -47,7 +57,8 @@
       border: none;
       outline: none;
       height: 3em;
-      border-bottom-left-radius: 5px;
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
     }
 
     .send-button {
@@ -57,7 +68,8 @@
       padding: 1em;
       cursor: pointer;
       font-size: 14px;
-      border-bottom-right-radius: 5px;
+      border-bottom-right-radius: 10px;
+      border-top-right-radius: 10px;
     }
 
     .disabled {
