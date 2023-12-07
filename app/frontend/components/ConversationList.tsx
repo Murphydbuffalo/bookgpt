@@ -8,11 +8,12 @@ export interface Conversation {
 interface ConversationListProps {
   selectedConversationId: number | null,
   conversations: Conversation[],
+  isLoading: boolean;
   handleClick: (conversationId: number | null) => Promise<void>
 };
 
 export default function ConversationList(props: ConversationListProps) {
-  const { conversations, selectedConversationId, handleClick } = props;
+  const { conversations, selectedConversationId, isLoading, handleClick } = props;
   const newConversation = { id: null, title: '+ New Conversation' } as Conversation;
   return (
     <ul className="conversation-list">
@@ -29,6 +30,7 @@ export default function ConversationList(props: ConversationListProps) {
           {i === 0 && <hr></hr>}
         </>
       ))}
+      {isLoading && <li key='loading' className='loading'>Loading conversations...</li>}
     </ul>
   );
 }

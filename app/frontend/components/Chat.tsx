@@ -125,6 +125,7 @@ export default function Chat() {
        conversations={conversations}
        selectedConversationId={conversationId}
        handleClick={selectConversation}
+       isLoading={isLoading}
       />
 
       <div className="chat-container">
