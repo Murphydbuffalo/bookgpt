@@ -29,6 +29,7 @@ export default function Chat() {
   const [conversationId, setConversationId] = useState<number | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [cachedConversationData, setCachedConversationData] = useState<Record<number, Message[]>>({});
 
   async function selectConversation(conversationId: number | null) {
     setError('');
@@ -40,13 +41,22 @@ export default function Chat() {
       return;
     }
   
+    if (cachedConversationData[conversationId] != null) {
+      setMessages(cachedConversationData[conversationId]);
+      setConversationId(conversationId);
+
+      return;
+    }
+
     try {
       const response = await fetch(`/conversations/${conversationId}`);
       const responseBody = await response.json();
+      const messages = responseBody.messages as Message[];
 
       if (response.ok) {
-        setMessages(responseBody.messages);
+        setMessages(messages);
         setConversationId(conversationId);
+        setCachedConversationData({ ...cachedConversationData, [conversationId]: messages })
       } else {
         setError(responseBody.error);
       }
