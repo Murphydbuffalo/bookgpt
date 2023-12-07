@@ -6,10 +6,10 @@ BookGPT uses Retrieval Augmented Generation to answer questions about [The Mom T
 Check it out at https://book-gpt-yjbf.onrender.com/.
 
 # Tech stack
-Back-end  - Rails
-Front-end - React and TypeScript
-Database  - Postgres
-PaaS      - Render
+- Back-end - Rails
+- Front-end - React and TypeScript
+- Database - Postgres
+- Hosting/Platform-as-a-Service - Render
 
 # Local setup
 First, install and run Postgres if you don't already have it set up. Eg on OSX:
