@@ -2,7 +2,6 @@
 
 class ConversationsController < ApplicationController
   protect_from_forgery with: :null_session
-  before_action :set_embeddings, only: %i[create]
 
   # NOTE: For the purposes of this exercise I'm just hardcoding a single user ID
   # to simulate there being support for multiple users, rather than building out
@@ -33,34 +32,33 @@ class ConversationsController < ApplicationController
   end
 
   def create
-    question = params[:question]
-
     @conversation = if params[:conversation_id].present?
                       Conversation.find_by!(user_id: USER_ID, id: params[:conversation_id])
                     else
-                      Conversation.new(user_id: USER_ID, title: question.truncate_words(25))
+                      Conversation.new(user_id: USER_ID, title: params[:question].truncate_words(25))
                     end
 
-    answer = Query.new(@embeddings, @conversation).ask(question)
+    question_embedding = Embedding.new.generate_embedding(params[:question])
+    answer = Query.new(@conversation).ask(question_embedding)
 
     Conversation.transaction do
       @conversation.save!
-      @conversation.messages.create!(role: 'user', content: question)
+      @conversation.messages.create!(
+        role: 'user',
+        content: question_embedding[:text],
+        embedding: Pgvector.encode(question_embedding[:embedding])
+      )
       @conversation.messages.create!(role: 'system', content: answer)
     end
 
     render json: { answer:, conversation_id: @conversation.id, conversation_title: @conversation.title }
   rescue StandardError => e
+    Rails.logger.error(e.message)
     Rails.logger.error(e.backtrace.join("\n"))
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
   private
-
-  def set_embeddings
-    file_embedder = FileEmbedding.new(ENV.fetch('BOOK_FILE_PATH'))
-    @embeddings = file_embedder.read
-  end
 
   def conversation_params
     params.require(:conversation).permit(:question, :conversation_id)

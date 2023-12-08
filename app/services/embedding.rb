@@ -13,6 +13,7 @@ class Embedding
   # https://openai.com/blog/new-and-improved-embedding-model
   EMBEDDING_MODEL = 'text-embedding-ada-002'
   EMBEDDING_MODEL_TOKEN_LIMIT = 8192
+  EMBEDDING_VECTOR_SIZE = 1536
 
   attr_reader :openai
 
@@ -43,31 +44,9 @@ class Embedding
     { text:, embedding: response.dig('data', 0, 'embedding') }
   end
 
-  def most_relevant_embeddings(query, context_embeddings, limit = 10)
-    query_embedding = generate_embedding(query)[:embedding]
-
-    context_embeddings.map do |embedding|
-      relevance = similarity(query_embedding, embedding[:embedding])
-
-      [relevance, embedding[:text]]
-    end.sort_by(&:first).last(limit)
-  end
-
-  def similarity(embedding1, embedding2)
-    v1 = Vector[*embedding1]
-    v2 = Vector[*embedding2]
-
-    # This is the cosine similarity function:
-    # https://en.wikipedia.org/wiki/Cosine_similarity
-    # "The resulting similarity ranges from -1 meaning exactly opposite,
-    # to 1 meaning exactly the same, with 0 indicating orthogonality or decorrelation,
-    # while in-between values indicate intermediate similarity or dissimilarity."
-    v1.dot(v2) / (v1.magnitude * v2.magnitude)
-  end
-
   private
 
-  # We could likely improve the performance of the model by splitting split text word breaks
+  # NOTE: We could likely improve the performance of the model by splitting split text word breaks
   # to ensure we aren't splitting the middle of a sentence. In practice the model seems to be
   # performing fine without that step, so I've punted on it for now.
   def split_text(text)

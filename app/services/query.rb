@@ -10,17 +10,16 @@ class Query
   GPT_CONTEXT_TOKEN_LIMIT = 16_385
   GPT_RESPONSE_TOKEN_LIMIT = 4096
 
-  attr_reader :openai, :embedder, :context_embeddings, :conversation
+  attr_reader :openai, :embedder, :conversation
 
-  def initialize(context_embeddings, conversation = nil)
+  def initialize(conversation = nil)
     @openai = OpenAI::Client.new(access_token: ENV.fetch('OPENAI_API_KEY'))
     @embedder = Embedding.new
-    @context_embeddings = context_embeddings
     @conversation = conversation
   end
 
-  def ask(question)
-    question_message = { role: 'user', content: question }
+  def ask(question_embedding)
+    question_message = { role: 'user', content: question_embedding[:text] }
     messages = fine_tuning_messages + conversation_messages + [question_message]
     message_token_count = OpenAI.rough_token_count(messages.map { |m| m[:content] }.join(' '))
 
@@ -35,9 +34,7 @@ class Query
                               Question contains #{available_context_tokens * -1} too many tokens.".squish
     end
 
-    most_relevant_passages = embedder.most_relevant_embeddings(question, context_embeddings)
-
-    most_relevant_passages.each do |(_relevance, text)|
+    most_relevant_passages(question_embedding).each do |(text)|
       passage = "Passage: #{text}\n"
       passage_token_count = OpenAI.rough_token_count(passage)
 
@@ -58,13 +55,26 @@ class Query
     response.dig('choices', 0, 'message', 'content')
   end
 
+  private
+
+  def most_relevant_passages(question_embedding, limit = 10)
+    # Order by most similar embedding vectors: https://github.com/pgvector
+    query = ActiveRecord::Base.sanitize_sql_array([
+                                                    'SELECT text FROM book_passages ORDER BY embedding <-> ? LIMIT ?',
+                                                    Pgvector.encode(question_embedding[:embedding]),
+                                                    limit
+                                                  ])
+    ActiveRecord::Base.connection.execute(query).to_a.map { |p| p['text'] }
+  end
+
   def fine_tuning_messages
     [{
       role: 'system',
       content: "Use the provided passages to answer questions about the book The Mom Test by Rob Fitzpatrick.
                 Don't mention the fact that you're using provided passages.
                 Keep your answers to a max of a few short sentences.
-                If you're not confident of the answer, or the question seems non-sensical say something like \"I'm not sure what you're asking.\"".squish
+                If you're not confident of the answer, or the question seems non-sensical say something like
+                \"I'm not sure what you're asking.\"".squish
     }]
   end
 

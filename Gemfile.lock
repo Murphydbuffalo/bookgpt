@@ -134,7 +134,6 @@ GEM
       net-pop
       net-smtp
     marcel (1.0.2)
-    matrix (0.4.2)
     mini_mime (1.1.5)
     minitest (5.20.0)
     msgpack (1.7.2)
@@ -167,6 +166,7 @@ GEM
       ruby-rc4
       ttfunk
     pg (1.5.4)
+    pgvector (0.2.2)
     psych (5.1.1.1)
       stringio
     puma (6.4.0)
@@ -292,9 +292,9 @@ DEPENDENCIES
   dotenv-rails
   importmap-rails
   jbuilder
-  matrix
   pdf-reader
   pg (~> 1.1)
+  pgvector
   puma (>= 5.0)
   rails (~> 7.1.2)
   redis (>= 4.0.1)

@@ -12,8 +12,8 @@ Check it out at https://book-gpt-yjbf.onrender.com/.
 - Hosting/Platform-as-a-Service - Render
 
 # Local setup
-First, install and run Postgres if you don't already have it set up. Eg on OSX:
-1. `brew install postgresql`
+First, install and run Postgres and its `pgvector` extension. Eg on OSX:
+1. `brew install postgresql pgvector`
 1. `brew services start postgresql`
 
 On Apple's new ARM machines you may need to build the Postgres C client library `libpq` from source and tell bundler where to find the corresponding config file when installing the `pg` gem:
