@@ -19,6 +19,50 @@ class Query
   end
 
   def ask(question_embedding)
+    highly_similar_question(question_embedding) || fetch_openai_answer(question_embedding)
+  end
+
+  private
+
+  # TODO: DRY out vector query code
+  def highly_similar_question(question_embedding)
+    vector = Pgvector.encode(question_embedding[:embedding])
+    query = ActiveRecord::Base.sanitize_sql_array([
+                                                    "SELECT id, content, conversation_id,
+                                                     1 - (embedding <=> ?) AS cosine_similarity
+                                                     FROM messages
+                                                     WHERE role = 'user' AND 1 - (embedding <=> ?) > 0.85
+                                                     ORDER BY 1 - (embedding <=> ?) DESC LIMIT 1",
+                                                    vector,
+                                                    vector,
+                                                    vector
+                                                  ])
+    most_similar_question = ActiveRecord::Base.connection.execute(query).to_a.first
+
+    return if most_similar_question.nil?
+
+    Rails.logger.info("For question '#{question_embedding[:text]}, found a similar question
+                       (cosine similarity = #{most_similar_question['cosine_similarity']}) that's already
+                       been answered: #{most_similar_question['content']}. Not going to call OpenAI API.".squish)
+
+    conversation = Conversation.find(most_similar_question['conversation_id'])
+
+    # Get the system message immediately following the question, use that as the answer
+    sorted_messages = conversation.messages.order(:created_at)
+    question_index = nil
+    answer = sorted_messages.each_with_index.find do |message, i|
+      question_index = i if message.id == most_similar_question['id']
+
+      question_index.present? && i == question_index + 1 && message.role == 'system'
+    end
+
+    # Because we used `each_with_index` `answer` is a two element array
+    # where the first element is the Message and the second element is its index.
+    # So we need to grab the first element.
+    answer&.first&.content
+  end
+
+  def fetch_openai_answer(question_embedding)
     question_message = { role: 'user', content: question_embedding[:text] }
     messages = fine_tuning_messages + conversation_messages + [question_message]
     message_token_count = OpenAI.rough_token_count(messages.map { |m| m[:content] }.join(' '))
@@ -44,6 +88,7 @@ class Query
       question_message[:content] += passage
     end
 
+    Rails.logger.info('Calling OpenAI Text Generation API')
     response = openai.chat(parameters:
                             {
                               model: GPT_MODEL,
@@ -55,12 +100,10 @@ class Query
     response.dig('choices', 0, 'message', 'content')
   end
 
-  private
-
   def most_relevant_passages(question_embedding, limit = 10)
     # Order by most similar embedding vectors: https://github.com/pgvector
     query = ActiveRecord::Base.sanitize_sql_array([
-                                                    'SELECT text FROM book_passages ORDER BY embedding <-> ? LIMIT ?',
+                                                    'SELECT text FROM book_passages ORDER BY embedding <=> ? LIMIT ?',
                                                     Pgvector.encode(question_embedding[:embedding]),
                                                     limit
                                                   ])
