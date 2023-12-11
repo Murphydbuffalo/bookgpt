@@ -24,9 +24,9 @@ class Query
 
   private
 
-  # TODO: DRY out vector query code
   def highly_similar_question(question_embedding)
     vector = Pgvector.encode(question_embedding[:embedding])
+    # DUPE: Vector queries. DRY these out if we keep adding similar cases.
     query = ActiveRecord::Base.sanitize_sql_array([
                                                     "SELECT id, content, conversation_id,
                                                      1 - (embedding <=> ?) AS cosine_similarity
@@ -101,7 +101,7 @@ class Query
   end
 
   def most_relevant_passages(question_embedding, limit = 10)
-    # Order by most similar embedding vectors: https://github.com/pgvector
+    # DUPE: Vector queries. DRY these out if we keep adding similar cases.
     query = ActiveRecord::Base.sanitize_sql_array([
                                                     'SELECT text FROM book_passages ORDER BY embedding <=> ? LIMIT ?',
                                                     Pgvector.encode(question_embedding[:embedding]),
