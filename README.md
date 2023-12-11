@@ -29,8 +29,9 @@ Then:
 1. `bundle exec rails db:create`
 1. `bundle exec rails db:migrate`
 1. `npm install`
+1. In a rails console or via `rails runner` run `BookPassage.import!(filepath: path_to_pdf_of_book)` to generate and store the embeddings of the book passages.
 1. In one process: `bundle exec rails server`
-1. In another: `./bin/vite build` to build the front-end assets in the same way they'll be built on prod. You can also run `./bin/vite dev` to run the Vite dev server, which will watch your front-end files for changes and compile them on the fly.
+1. In another: `./bin/vite dev` to watch the front-end files for changes and compile them on the fly. You can also run `./bin/vite build` to build the assets in the same way they'll be built on prod (via esbuild, walking the entire module graph, rather than doing incremental updates).
 1. Visit localhost:3000
 
 If everything worked you're now ready to ask questions about The Mom Test!

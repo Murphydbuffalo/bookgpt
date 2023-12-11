@@ -4,7 +4,7 @@ class BookPassage < ApplicationRecord
   validates_presence_of :text
   validates_presence_of :embedding
 
-  def self.import!(filepath: ENV.fetch('BOOK_FILEPATH'), delete_existing: false)
+  def self.import!(filepath:, delete_existing: false)
     embedder = Embedding.new
     reader = PDF::Reader.new(filepath)
 
