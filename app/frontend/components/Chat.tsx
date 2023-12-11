@@ -68,6 +68,35 @@ export default function Chat() {
     }
   }
 
+  const fetchAnswer = async (userMessage: string): Promise<void> => {
+    setError('');
+    setAnswerIsLoading(true);
+
+    try {
+      const response = await postJson('/conversations', { question: userMessage, conversation_id: conversationId });
+      const responseBody = await response.json();
+
+      if (response.ok) {
+        const botAnswer = responseBody.answer;
+        setMessages([...messages, { content: userMessage, role: 'user' }, { content: botAnswer, role: 'system' }]);
+
+        if (conversationId == null) { // It's a new conversation
+          const newConversation = { id: responseBody.conversation_id, title: responseBody.conversation_title };
+          setConversationId(newConversation.id);
+          setConversations([newConversation, ...conversations])
+        }
+      } else {
+        setError(responseBody.error);
+      }
+    } catch(err) {
+      const e = (err as { message: string });
+      const message = e.message ? e.message : 'Something went wrong sending your message, please try again in a moment.';
+      setError(message);
+    } finally {
+      setAnswerIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     async function fetchConversations() {
       setError('');
@@ -98,35 +127,6 @@ export default function Chat() {
 
     fetchConversations();
   }, []);
-
-  const fetchAnswer = async (userMessage: string): Promise<void> => {
-    setError('');
-    setAnswerIsLoading(true);
-
-    try {
-      const response = await postJson('/conversations', { question: userMessage, conversation_id: conversationId });
-      const responseBody = await response.json();
-
-      if (response.ok) {
-        const botAnswer = responseBody.answer;
-        setMessages([...messages, { content: userMessage, role: 'user' }, { content: botAnswer, role: 'system' }]);
-
-        if (conversationId == null) { // It's a new conversation
-          const newConversation = { id: responseBody.conversation_id, title: responseBody.conversation_title };
-          setConversationId(newConversation.id);
-          setConversations([newConversation, ...conversations])
-        }
-      } else {
-        setError(responseBody.error);
-      }
-    } catch(err) {
-      const e = (err as { message: string });
-      const message = e.message ? e.message : 'Something went wrong sending your message, please try again in a moment.';
-      setError(message);
-    } finally {
-      setAnswerIsLoading(false);
-    }
-  };
 
   return (
     <div className="chat-app">
